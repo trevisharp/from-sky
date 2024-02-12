@@ -3,9 +3,7 @@
  */
 namespace FromSky;
 
-using Radiance;
-
-public class Scene
+public class Layer
 {
-    
+
 }
