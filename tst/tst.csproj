@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Dominion.csproj" />
+    <ProjectReference Include="..\src\FromSky.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
