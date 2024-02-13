@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 
+using Radiance;
+
 namespace FromSky;
 
 /// <summary>
@@ -26,6 +28,45 @@ public class InputConsumerStack : LinkedList<Action<ControlData>>
     public InputConsumerStack Push(Func<Action<ControlData>> closure)
     {
         AddFirst(closure());
+        return this;
+    }
+
+    /// <summary>
+    /// Add a input consumer layer in start of layers.
+    /// </summary>
+    public InputConsumerStack Push(Input input, Action action)
+    {
+        AddFirst(x =>
+        {
+            if (x.Contains(input))
+                action();
+        });
+        return this;
+    }
+    
+    /// <summary>
+    /// Add a input consumer layer in start of layers.
+    /// </summary>
+    public InputConsumerStack Push(Input input, Action down, Action up)
+    {
+        Push(() => {
+            bool isdown = false;
+            return x =>
+            {
+                var hasInput = x.Contains(input);
+                if (hasInput && !isdown)
+                {
+                    down();
+                    isdown = true;
+                }
+
+                if (!hasInput && isdown)
+                {
+                    up();
+                    isdown = false;
+                }
+            };
+        });
         return this;
     }
 

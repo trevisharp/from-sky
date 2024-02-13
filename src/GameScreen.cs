@@ -58,6 +58,9 @@ public static class Game
                 layer.Draw();
         };
 
-        Window.Open(false);
+        Window.Open();
     }
+
+    public static void Close()
+        => Window.Close();
 }
