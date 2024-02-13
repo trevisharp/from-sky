@@ -5,7 +5,10 @@ namespace FromSky;
 
 using Radiance;
 
-public class Scene
+public class Scene : Layer
 {
-    
+    public override void Draw()
+    {
+        throw new System.NotImplementedException();
+    }
 }
