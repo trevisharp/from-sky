@@ -22,43 +22,126 @@ public class Game<T>
     private static Game<T> current = null;
     public static Game<T> Current => current;
 
+    /// <summary>
+    /// Get or set the path of Game files folder.
+    /// </summary>
     public static string GameMainFolder { get; set; } 
         = AppDomain.CurrentDomain.BaseDirectory;
 
+    /// <summary>
+    /// Reset the game.
+    /// </summary>
     public static void New()
         => current = new();
 
+    /// <summary>
+    /// Save current game in saves folder. Is editable parameter is true (the 
+    /// default is false) generate a editable json save.
+    /// If the save do not exit, create a new save file.
+    /// </summary>
     public static async Task Save(bool editable = false)
     {
+        if (Current is null)
+            throw new MissingGameException();
+
         var path = getSaveFile(GameMainFolder, editable);
         var json = JsonSerializer.Serialize(Current.Data);
-        if (editable)
-        {
-            await File.WriteAllTextAsync(path, json);
-            return;
-        }
-        
-        var jsonBytes = Encoding.UTF32.GetBytes(json);
-        var payload = Convert.ToBase64String(jsonBytes);
+        var content = editable ? json : await getReadOnlyContent(json);
+        await File.WriteAllTextAsync(path, content);
+    }
 
+    /// <summary>
+    /// Load game the from a save in save folder in main game folder.
+    /// </summary>
+    public static async void Load(string saveFileName)
+    {
+        var saveFolder = getSaveFolder(GameMainFolder);
+        var saveFilePath = Path.Combine(saveFolder, saveFileName);
+        if (!File.Exists(saveFilePath))
+            throw new MissingSaveException(saveFilePath);
+        var extension = Path.GetExtension(saveFilePath);
+
+        current = new()
+        {
+            SaveFileName = saveFileName,
+            Data = extension switch
+            {
+                "rlfss" => await loadFromReadOnlyContent(saveFilePath),
+                "fss" => await loadFromContent(saveFilePath),
+                _ => throw new InvalidExtensionException(saveFilePath)
+            }
+        };
+    }
+
+    /// <summary>
+    /// Disattach the game from the current save file.
+    /// </summary>
+    public static void Disattach()
+    {
+        if (Current is null)
+            throw new MissingGameException();
+        
+        Current.SaveFileName = null;
+    }
+
+    /// <summary>
+    /// Attach the game to a specific save file.
+    /// </summary>
+    public static void Attach(string saveFileName)
+    {
+        if (Current is null)
+            throw new MissingGameException();
+        
+        Current.SaveFileName = saveFileName;
+    }
+
+    private static async Task<T> loadFromReadOnlyContent(string path)
+    {
+        var content = await File.ReadAllTextAsync(path);
+        var contentParts = content.Split('.');
+
+        if (contentParts.Length != 2)
+            throw new InvalidReadOnlySaveException(path);
+        var payload = contentParts[0];
+        var signature = contentParts[1];
+
+        var expectedSignature = await getSignature(payload);
+        if (signature != expectedSignature)
+            throw new InvalidSignatureException(path);
+        
+        var json = getJsonFromReadOnlyContent(payload);
+        return JsonSerializer.Deserialize<T>(json);
+    }
+
+    private static async Task<T> loadFromContent(string path)
+    {
+        var json = await File.ReadAllTextAsync(path);
+        return JsonSerializer.Deserialize<T>(json);
+    }
+
+    private static async Task<string> getSignature(string payload)
+    {
         var key = getSecurityKey();
         using var ms = new MemoryStream(
             Encoding.UTF32.GetBytes(payload + key)
         );
         var signatureBytes = await SHA256.HashDataAsync(ms);
-        var signature = Convert.ToBase64String(signatureBytes);
-        
-        var content = $"{payload}.{signature}";
-        await File.WriteAllTextAsync(path, content);
+        return Convert.ToBase64String(signatureBytes);
     }
 
-    public static void Load(string saveFileName)
+    private static async Task<string> getReadOnlyContent(string json)
     {
-        if (!File.Exists(saveFileName))
-            throw new MissingSaveException(saveFileName);
-        var extension = Path.GetExtension(saveFileName);
+        var jsonBytes = Encoding.UTF8.GetBytes(json);
+        var payload = Convert.ToBase64String(jsonBytes);
+        var signature = await getSignature(payload);
         
-        // TODO
+        return $"{payload}.{signature}";
+    }
+
+    private static string getJsonFromReadOnlyContent(string content)
+    {
+        var contentBytes = Convert.FromBase64String(content);
+        return Encoding.UTF8.GetString(contentBytes);
     }
 
     private static string getSecurityKey()

@@ -6,10 +6,10 @@ using System;
 namespace FromSky.Exceptions;
 
 /// <summary>
-/// Represents a error throwed when a save do not exits.
+/// Represents a error throwed when a empty game is used.
 /// </summary>
-public class MissingSaveException(string path) : Exception
+public class MissingGameException : Exception
 {
     public override string Message =>
-        $"The save in file {path} do not exists.";
+        $"The game do not started yet. Use Game<T>.New() to init.";
 }
