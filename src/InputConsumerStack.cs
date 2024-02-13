@@ -39,7 +39,7 @@ public class InputConsumerStack : LinkedList<Action<ControlData>>
         AddFirst(x =>
         {
             if (x.Contains(input))
-                action();
+                action?.Invoke();
         });
         return this;
     }
@@ -56,13 +56,13 @@ public class InputConsumerStack : LinkedList<Action<ControlData>>
                 var hasInput = x.Contains(input);
                 if (hasInput && !isdown)
                 {
-                    down();
+                    down?.Invoke();
                     isdown = true;
                 }
 
                 if (!hasInput && isdown)
                 {
-                    up();
+                    up?.Invoke();
                     isdown = false;
                 }
             };

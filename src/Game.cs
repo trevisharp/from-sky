@@ -207,14 +207,14 @@ public class Game<T>
     private static void resetSaveFileName(string saveFolder, bool editable)
     {
         var files = Directory.GetFiles(saveFolder);
-        var lastId = files
+        var ids = files
             .Select(Path.GetFileNameWithoutExtension)
             .Select(file => file.Replace("_", ""))
-            .Select(int.Parse)
-            .Max();
+            .Select(int.Parse);
         
+        var lastId = ids.Any() ? ids.Max() : 0;
         var newId = (lastId + 1).ToString("00_000_000");
-        var extension = editable ? ".fss" : ".rlfss";
+        var extension = editable ? "fss" : "rlfss";
         Current.SaveFileName = $"{newId}.{extension}";
     }
 
