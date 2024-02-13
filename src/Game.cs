@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 
 namespace FromSky;
 
+using System.Collections.Generic;
 using Exceptions;
 
 /// <summary>
@@ -55,6 +56,12 @@ public class Game<T>
         var json = JsonSerializer.Serialize(Current.Data);
         var content = editable ? json : await getReadOnlyContent(json);
         await File.WriteAllTextAsync(path, content);
+
+        var resumePath = path + ".resume";
+        var resumeJson = JsonSerializer.Serialize(
+            GameDataResume.GetResume(Current.Data, Current.SaveFileName)
+        );
+        await File.WriteAllTextAsync(resumePath, resumeJson);
     }
 
     /// <summary>
@@ -100,6 +107,37 @@ public class Game<T>
             throw new MissingGameException();
         
         Current.SaveFileName = saveFileName;
+    }
+
+    /// <summary>
+    /// Attach the game to a specific save file.
+    /// </summary>
+    public static void Attach(GameDataResume resume)
+    {
+        if (Current is null)
+            throw new MissingGameException();
+        
+        Current.SaveFileName = resume.SaveFileName;
+    }
+
+    /// <summary>
+    /// Get all save resumes.
+    /// </summary>
+    public static async Task<IEnumerable<GameDataResume>> GetSaves()
+    {
+        var saveFolder = getSaveFolder(GameMainFolder);
+        var files = Directory.GetFiles(saveFolder)
+            .Where(file => Path.GetExtension(file) == ".resume");
+        
+        List<GameDataResume> resumes = [];
+        foreach (var file in files)
+        {
+            var content = await File.ReadAllTextAsync(file);
+            var obj = JsonSerializer.Deserialize<GameDataResume>(content);
+            resumes.Add(obj);
+        }
+
+        return resumes;
     }
 
     private static async Task<T> loadFromReadOnlyContent(string path)
