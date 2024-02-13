@@ -1,7 +1,6 @@
 /* Author:  Leonardo Trevisan Silio
  * Date:    13/02/2024
  */
-using System;
 using System.Collections.Generic;
 
 using Radiance;
@@ -15,6 +14,9 @@ public static class Game
 {
     private static List<Layer> layers = [];
     public static IEnumerable<Layer> Layers => layers;
+
+    private static InputConsumerStack inputStack = [];
+    public static InputConsumerStack Inputs => inputStack;
 
     private static ControlManager manager = new ControlManager();
 
@@ -34,6 +36,11 @@ public static class Game
         Window.OnMouseUp += manager.ReciveMouseUp;
         Window.OnMouseWhell += manager.ReciveMouseWheel;
         Window.OnFrame += manager.ReciveFrame;
+
+        Window.OnFrame += () => 
+            Inputs.Consume(
+                manager.GetData()
+            );
 
         Window.OnLoad += () =>
         {

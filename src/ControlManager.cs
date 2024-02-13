@@ -1,7 +1,6 @@
 /* Author:  Leonardo Trevisan Silio
  * Date:    13/02/2024
  */
-using System;
 using System.Collections.Generic;
 
 using Radiance;
@@ -19,6 +18,17 @@ public class ControlManager
     public float CursorY { get; private set; }
     public float Whell { get; private set; }
     public bool MouseInScreen { get; private set; } = false;
+
+    public ControlData GetData()
+        => new()
+        {
+            CursorX = this.CursorX,
+            CursorY = this.CursorY,
+            Whell = this.Whell,
+            MouseInScreen = this.MouseInScreen,
+            Inputs = new HashSet<Input>(this.Inputs),
+            MouseButtons = new HashSet<MouseButton>(this.MouseButtons)
+        };
 
     public virtual void ReciveKeyDown(Input input, Modifier modifier)
         => Inputs.Add(input);
