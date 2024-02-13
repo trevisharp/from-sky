@@ -1,9 +1,12 @@
 /* Author:  Leonardo Trevisan Silio
- * Date:    12/02/2024
+ * Date:    13/02/2024
  */
 namespace FromSky;
 
-public class Layer
+/// <summary>
+/// Represents a layer viewed in screen.
+/// </summary>
+public abstract class Layer
 {
-
+    public abstract void Draw();
 }

@@ -1,3 +1,3 @@
 ﻿using FromSky;
 
-Scene scene = new Scene();
+Game.Open();
