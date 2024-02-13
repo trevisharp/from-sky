@@ -20,6 +20,10 @@ public class Game<T>
     where T : GameData, new()
 {
     private static Game<T> current = null;
+
+    /// <summary>
+    /// Get the current game instance.
+    /// </summary>
     public static Game<T> Current => current;
 
     /// <summary>
@@ -32,7 +36,10 @@ public class Game<T>
     /// Reset the game.
     /// </summary>
     public static void New()
-        => current = new();
+        => current = new() { 
+            SaveFileName = null,
+            Data = new()
+        };
 
     /// <summary>
     /// Save current game in saves folder. Is editable parameter is true (the 
@@ -182,6 +189,13 @@ public class Game<T>
         return savePath;
     }
     
+    /// <summary>
+    /// Get the name of save file.
+    /// </summary>
     public string SaveFileName { get; private set; }
-    public T Data { get; set; }
+
+    /// <summary>
+    /// Get the game data.
+    /// </summary>
+    public T Data { get; private set; }
 }
