@@ -1,5 +1,5 @@
 /* Author:  Leonardo Trevisan Silio
- * Date:    13/02/2024
+ * Date:    14/02/2024
  */
 using System;
 using System.IO;
@@ -160,7 +160,7 @@ public class SaveSystem<T>
                 continue;
 
             var propValue = prop.GetValue(data);
-            prop.SetValue(data, propValue);
+            prop.SetValue(resume, propValue);
         }
         return resume;
     }
@@ -235,7 +235,7 @@ public class SaveSystem<T>
     {
         var files = Directory.GetFiles(saveFolder);
         var ids = files
-            .Where(file => Path.GetExtension(file) != "resume")
+            .Where(file => Path.GetExtension(file) != ".resume")
             .Select(Path.GetFileNameWithoutExtension)
             .Select(file => file.Replace("_", ""))
             .Select(int.Parse);
