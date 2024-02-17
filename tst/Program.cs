@@ -1,12 +1,18 @@
 ﻿using System;
 
 using FromSky;
+using FromSky.Meshes;
+
 using Radiance;
+using static Radiance.Utils;
 
 var save = new SaveSystem<TestGame>();
 save.New();
 
-Scene world = new Scene();
+Scene world =
+[
+    new Cube(blue, 50, 50, 50),
+];
 
 Game.Inputs.Push(Input.S, null, async () => await save.Save());
 Game.Inputs.Push(Input.A, null, () => save.Current.Points++);

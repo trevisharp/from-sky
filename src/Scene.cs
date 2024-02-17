@@ -1,19 +1,22 @@
 /* Author:  Leonardo Trevisan Silio
- * Date:    16/02/2024
+ * Date:    17/02/2024
  */
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace FromSky;
 
 using static Radiance.Utils;
 
-public class Scene : Layer
+public class Scene : Layer, IList<Mesh>
 {
+    List<Mesh> meshes = [];
     dynamic mainRender;
 
     public Scene()
     {
-        updateAngles();
+        updateScene();
 
         mainRender = render(() => {
             clear((0, 0, .4f, 1f));
@@ -23,6 +26,8 @@ public class Scene : Layer
     public override void Draw()
     {
         mainRender(Empty);
+        foreach (var mesh in meshes)
+            mesh.Draw();
     }
 
     const float a0 = 35.26f * MathF.PI / 180f;
@@ -37,7 +42,7 @@ public class Scene : Layer
     private float sinbsina = float.NaN;
     private float cosbsina = float.NaN;
 
-    private void updateAngles()
+    private void updateScene()
     {
         cosa = MathF.Cos(a);
         cosb = MathF.Cos(b);
@@ -45,6 +50,8 @@ public class Scene : Layer
         sinb = MathF.Sin(b);
         sinbsina = sinb * sina;
         cosbsina = cosb * sina;
+        foreach (var mesh in meshes)
+            mesh.SetCamTransform(camTransform);
     }
 
     private (float x, float y) camTransform(float x, float y, float z)
@@ -52,4 +59,54 @@ public class Scene : Layer
             x * cosb - z * sinb,
             y * cosa + x * sinbsina + z * cosbsina
         );
+
+    public int Count => meshes.Count;
+
+    public bool IsReadOnly => false;
+
+    public Mesh this[int index]
+    {
+        get => meshes[index];
+        set
+        {
+            meshes[index] = value;
+            value.SetCamTransform(camTransform);
+        }
+    }
+
+    public int IndexOf(Mesh item)
+        => meshes.IndexOf(item);
+
+    public void Insert(int index, Mesh item)
+    {
+        meshes.Insert(index, item);
+        item.SetCamTransform(camTransform);
+    }
+
+    public void RemoveAt(int index)
+        => meshes.RemoveAt(index);
+
+    public void Add(Mesh item)
+    {
+        meshes.Add(item);
+        item.SetCamTransform(camTransform);
+    }
+
+    public void Clear()
+        => meshes.Clear();
+
+    public bool Contains(Mesh item)
+        => meshes.Contains(item);
+
+    public void CopyTo(Mesh[] array, int arrayIndex)
+        => meshes.CopyTo(array, arrayIndex);
+
+    public bool Remove(Mesh item)
+        => meshes.Remove(item);
+
+    public IEnumerator<Mesh> GetEnumerator()
+        => meshes.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator()
+        => meshes.GetEnumerator();
 }
