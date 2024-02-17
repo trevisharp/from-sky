@@ -32,5 +32,8 @@ public class LayerStack : LinkedList<Layer>
     /// Draw the last layer.
     /// </summary>
     public void Draw()
-        => Last.Value?.Draw();
+    {
+        foreach (var layer in this)
+            layer.Draw();
+    }
 }

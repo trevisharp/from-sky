@@ -11,7 +11,7 @@ save.New();
 
 Scene world =
 [
-    new Cube(blue, 50, 50, 50),
+    new Cube(red, 50, 50, 50),
 ];
 
 Game.Inputs.Push(Input.S, null, async () => await save.Save());

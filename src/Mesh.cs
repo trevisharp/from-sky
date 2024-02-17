@@ -1,24 +1,16 @@
 /* Author:  Leonardo Trevisan Silio
  * Date:    17/02/2024
  */
-using System;
-using System.Collections.Generic;
+using Radiance.Data;
 
 namespace FromSky;
 
-public class Mesh : List<Face>
+/// <summary>
+/// Represents a complex 3D object
+/// </summary>
+public abstract class Mesh
 {
-    public void Draw()
-    {
-        foreach (var face in this)
-            face.Draw();
-    }
+    public Vec3 Position { get; set; } = (0, 0, 0);
 
-    public void SetCamTransform(
-        Func<float, float, float, (float x, float y)> camTransform
-    )
-    {
-        foreach (var face in this)
-            face.SetCamTransform(camTransform);
-    }
+    public abstract void Draw();
 }
