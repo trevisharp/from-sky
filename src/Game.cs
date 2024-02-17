@@ -1,8 +1,6 @@
 /* Author:  Leonardo Trevisan Silio
- * Date:    13/02/2024
+ * Date:    16/02/2024
  */
-using System.Collections.Generic;
-
 using Radiance;
 
 namespace FromSky;
@@ -12,20 +10,26 @@ namespace FromSky;
 /// </summary>
 public static class Game
 {
-    private static List<Layer> layers = [];
-    public static IEnumerable<Layer> Layers => layers;
+    private static LayerStack layers = [];
+    public static LayerStack Layers => layers;
 
     private static InputConsumerStack inputStack = [];
     public static InputConsumerStack Inputs => inputStack;
 
     private static ControlManager manager = new ControlManager();
 
-    private static bool isOpened = false;
+    private static bool isLoaded = false;
     public static void Open()
     {
-        if (isOpened)
+        if (Window.IsOpen)
             return;
-        isOpened = true;
+        
+        if (isLoaded)
+        {
+            Window.Open();
+            return;
+        }
+        isLoaded = true;
 
         Window.OnKeyDown += manager.ReciveKeyDown;
         Window.OnKeyUp += manager.ReciveKeyUp;
@@ -36,6 +40,7 @@ public static class Game
         Window.OnMouseUp += manager.ReciveMouseUp;
         Window.OnMouseWhell += manager.ReciveMouseWheel;
         Window.OnFrame += manager.ReciveFrame;
+        Window.OnRender += layers.Draw;
 
         Window.OnFrame += () => 
             Inputs.Consume(
@@ -52,11 +57,6 @@ public static class Game
 
         };
     
-        Window.OnRender += delegate
-        {
-            foreach (var layer in layers)
-                layer.Draw();
-        };
 
         Window.Open();
     }
