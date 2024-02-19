@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="radiance" Version="2.2.0" />
+    <PackageReference Include="Radiance" Version="2.3.1" />
   </ItemGroup>
 
 </Project>

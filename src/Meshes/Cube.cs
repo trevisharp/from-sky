@@ -22,11 +22,9 @@ public class Cube : Mesh
         sy /= 2;
         sz /= 2;
 
-        Position = (300, 300, 0);
-
-        add([ (-sx, -sy, -sz), (+sx, -sy, -sz), (+sx, +sy, -sz), (-sx, +sy, -sz) ]);
-        add([ (-sx, +sy, -sz), (-sx, +sy, +sz), (+sx, +sy, +sz), (+sx, +sy, -sz) ]);
-        add([ (-sx, -sy, -sz), (-sx, -sy, +sz), (-sx, +sy, +sz), (-sx, +sy, -sz) ]);
+        add([ (-sx, +sy, -sz), (+sx, +sy, -sz), (+sx, +sy, +sz), (-sx, +sy, +sz) ]);
+        add([ (-sx, +sy, -sz), (-sx, -sy, -sz), (+sx, -sy, -sz), (+sx, +sy, -sz) ]);
+        add([ (-sx, +sy, -sz), (-sx, +sy, +sz), (-sx, -sy, +sz), (-sx, -sy, -sz) ]);
     }
 
     public override void Draw()
@@ -35,10 +33,27 @@ public class Cube : Mesh
             Position, color
         );
         faces[1].GetRender(Renders.Fill)(
-            Position, color
+            Position,
+            color.X * .8f,
+            color.Y * .8f,
+            color.Z * .8f,
+            color.W
         );
         faces[2].GetRender(Renders.Fill)(
-            Position, color
+            Position,
+            color.X * .6f,
+            color.Y * .6f,
+            color.Z * .6f,
+            color.W
+        );
+        faces[0].GetRender(Renders.Draw)(
+            Position, black
+        );
+        faces[1].GetRender(Renders.Draw)(
+            Position, black
+        );
+        faces[2].GetRender(Renders.Draw)(
+            Position, black
         );
     }
 }
