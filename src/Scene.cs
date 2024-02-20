@@ -16,6 +16,16 @@ public class Scene : Layer, IList<Mesh>
             mesh.Draw();
     }
 
+    public void Move(float dx, float dy, float dz)
+    {
+        foreach (var mesh in this)
+            mesh.Position = (
+                mesh.Position.X + dx,
+                mesh.Position.Y + dy,
+                mesh.Position.Z + dz
+            );
+    }
+
     public int Count => meshes.Count;
     public bool IsReadOnly => false;
 

@@ -46,14 +46,5 @@ public class Cube : Mesh
             color.Z * .6f,
             color.W
         );
-        faces[0].GetRender(Renders.Draw)(
-            Position, black
-        );
-        faces[1].GetRender(Renders.Draw)(
-            Position, black
-        );
-        faces[2].GetRender(Renders.Draw)(
-            Position, black
-        );
     }
 }
